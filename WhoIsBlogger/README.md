@@ -1,5 +1,6 @@
 # Задание для Junior data analyst
 **Компания:** WhoIsBlogger
+
 **Уровень:** Junior  
 **Навыки:** SQL
 
