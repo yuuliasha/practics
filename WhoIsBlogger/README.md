@@ -1,4 +1,5 @@
-# Задание: Junior data analyst для компании WhoIsBlogger
+# Задание для Junior data analyst
+**Компания:** WhoIsBlogger
 **Уровень:** Junior  
 **Навыки:** SQL
 
