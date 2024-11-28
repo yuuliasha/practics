@@ -61,10 +61,8 @@ SELECT COUNT(*) AS snow_cleaning_count
 FROM events e
 JOIN types t ON e.typeid = t.id
 JOIN cities ct ON e.cityid = ct.id
-WHERE 
-    t.name = 'Уборка снега'
-    AND ct.name = 'Москва'
-    AND e.date >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR);
+WHERE t.name = 'Уборка снега' AND ct.name = 'Москва' AND e.date >= DATE_SUB(CURDATE(), INTERVAL 3 YEAR);
+
 Пояснение:
 JOIN cities ct ON e.cityid = ct.id — соединяем события с городами.
 WHERE t.name = 'Уборка снега' AND ct.name = 'Москва' — фильтруем события уборки снега в Москве.
@@ -114,27 +112,17 @@ WITH yearly_costs AS (
 SELECT r.id AS region_id,t.name AS event_type, SUM(e.costs) / COUNT(DISTINCT YEAR(e.date)) AS total_yearly_costs
 FROM events e
 JOIN cities ct ON e.cityid = ct.id
-JOIN 
-        regions r ON ct.regionid = r.id
-    JOIN 
-        types t ON e.typeid = t.id
-    GROUP BY 
-        r.id, t.name
+JOIN regions r ON ct.regionid = r.id
+JOIN types t ON e.typeid = t.id
+GROUP BY r.id, t.name
 )
-SELECT 
-    r.name AS region_name, 
-    yc.event_type, 
+SELECT r.name AS region_name, yc.event_type, 
     (yc.total_yearly_costs / SUM(ct.population)) AS cost_per_person
-FROM 
-    yearly_costs yc
-JOIN 
-    regions r ON yc.region_id = r.id
-JOIN 
-    cities ct ON r.id = ct.regionid
-GROUP BY 
-    r.name, yc.event_type;
+FROM yearly_costs yc
+JOIN regions r ON yc.region_id = r.id
+JOIN cities ct ON r.id = ct.regionid
+GROUP BY r.name, yc.event_type;
 Пояснение:
 SUM(e.costs) / COUNT(DISTINCT YEAR(e.date)) — находим общие годовые траты по каждому региону и типу события.
 (yc.total_yearly_costs / SUM(ct.population)) — делим траты на население региона, чтобы получить стоимость на одного человека.																									
-																									
-		
+																										
