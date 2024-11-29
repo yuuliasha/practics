@@ -19,6 +19,7 @@
 - Конверсия в подписку отражает эффективность привлечения новых подписчиков.
 - ARPU и средний чек позволяют оценить, как монетизируется контент и какой вклад каждый пользователь приносит в доходы.
 - Частота взаимодействия с контентом нужна для оценки социальной активности, что косвенно влияет на удержание пользователей.
+
 3. Логика сборки метрик
 1) Пример расчета DAU/MAU:
 Данные: количество активных пользователей за день/месяц.
@@ -37,3 +38,59 @@
 - Подписка на автора/продакшн (время подписки, отмена подписки).
 -  Монетизация (покупки, суммы).
 Эти события можно хранить в дата-сторе, например, в виде JSON-структур, с последующей агрегацией в дата-воркхаусе (например, Google BigQuery или AWS Redshift) для создания отчетов и анализа.
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# 1. Загрузка данных
+file_path = 'transactions_feb_2020.csv'
+data = pd.read_csv(file_path)
+
+# 2. Предварительный анализ
+print(data.info())
+print(data.describe())
+print(data.isnull().sum())  # Пропуски в данных
+print(data.duplicated().sum())  # Дубликаты
+
+# 3. Анализ данных
+# Общее количество транзакций
+total_transactions = len(data)
+
+# Общая сумма транзакций
+total_amount = data['amount'].sum()
+
+# Средний чек
+average_check = data['amount'].mean()
+
+# Транзакции по дням
+data['date'] = pd.to_datetime(data['date'])
+daily_transactions = data.groupby(data['date'].dt.date)['amount'].sum()
+
+# Пиковые дни
+peak_days = daily_transactions.sort_values(ascending=False).head(5)
+
+# Распределение транзакций по клиентам
+client_transactions = data['client_id'].value_counts()
+
+# 4. Визуализация данных
+plt.figure(figsize=(10, 6))
+daily_transactions.plot(kind='bar', color='skyblue')
+plt.title('Динамика транзакций по дням')
+plt.xlabel('Дата')
+plt.ylabel('Сумма транзакций')
+plt.show()
+
+plt.figure(figsize=(8, 5))
+client_transactions.plot(kind='hist', bins=20, color='orange')
+plt.title('Распределение транзакций по клиентам')
+plt.xlabel('Количество транзакций')
+plt.ylabel('Частота')
+plt.show()
+
+# 5. Выводы
+print(f"Общее количество транзакций: {total_transactions}")
+print(f"Общая сумма транзакций: {total_amount}")
+print(f"Средний чек: {average_check}")
+print(f"Пиковые дни по транзакциям:\n{peak_days}")
+
+  
